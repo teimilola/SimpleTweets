@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Simple Tweets</string>
+    <string name="toolbar_name">Twitter</string>
+    <string name="login_label">Connect To Twitter</string>
+    <string name="title_activity_timeline"> Home Timeline </string>
+    <string name="mentions_fragment">Mentions</string>
+    <string name="profile">Profile</string>
+</resources>
