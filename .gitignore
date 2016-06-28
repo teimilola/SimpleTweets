@@ -1,5 +1,6 @@
 # Source: https://gist.github.com/nesquena/5617544/raw/53710b374e7df3302df43b552488d876040ada3d/.gitignore
 
+.DS_Store
 # built application files
 *.apk
 *.ap_
