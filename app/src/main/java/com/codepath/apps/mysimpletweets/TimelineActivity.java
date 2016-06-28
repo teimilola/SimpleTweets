@@ -50,7 +50,7 @@ public class TimelineActivity extends AppCompatActivity {
     public void onProfileView(MenuItem mi) {
             //Launch the profile view
             // Toast.makeText(this, "Invisible", Toast.LENGTH_SHORT).show();
-        Intent i= new Intent();
+        Intent i= new Intent(TimelineActivity.this, ProfileActivity.class);
         startActivity(i);
     }
 
