@@ -1,5 +1,8 @@
 package com.codepath.apps.mysimpletweets.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +32,7 @@ rel=\"nofollow\">Twitter for iPhone<\/a>","favorited":false,"in_reply_to_status_
  */
 
 //Parse the JSON + store the data, encapsulate state logic or display login
-public class Tweet {
+public class Tweet implements Parcelable{
     public String getBody() {
         return body;
     }
@@ -50,6 +53,50 @@ public class Tweet {
     private long uid;
     private User user; //store embedded user object
     private String createdAt;
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(uid);
+        out.writeString(body);
+        out.writeString(createdAt);
+        out.writeParcelable(user, flags);
+    }
+
+    private Tweet(Parcel in){
+        uid= in.readLong();
+        body= in.readString();
+        createdAt= in.readString();
+        user = in.readParcelable(User.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // After implementing the `Parcelable` interface, we need to create the
+    // `Parcelable.Creator<MyParcelable> CREATOR` constant for our class;
+    // Notice how it has our class specified as its type.
+    public static final Parcelable.Creator<Tweet> CREATOR
+            = new Parcelable.Creator<Tweet>() {
+
+        // This simply calls our new constructor (typically private) and
+        // passes along the unmarshalled `Parcel`, and then returns the new object!
+        @Override
+        public Tweet createFromParcel(Parcel in) {
+            return new Tweet(in);
+        }
+
+        // We just need to copy this and change the type to match our class.
+        @Override
+        public Tweet[] newArray(int size) {
+            return new Tweet[size];
+        }
+    };
+
+    public Tweet(){
+
+    }
 
     //Deserailizse the JSON
     //tweet from JSON <==> Tweet

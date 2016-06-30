@@ -1,5 +1,8 @@
 package com.codepath.apps.mysimpletweets.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +24,7 @@ import org.json.JSONObject;
     "screen_name":"KingIdowu_",
     }
 */
-public class User {
+public class User implements Parcelable {
     public String getName() {
         return name;
     }
@@ -58,6 +61,56 @@ public class User {
     private String tagline;
     private int followersCount;
     private int followingCount;
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(name);
+        out.writeLong(uid);
+        out.writeString(screenName);
+        out.writeString(profileImageUrl);
+        out.writeString(tagline);
+        out.writeInt(followersCount);
+        out.writeInt(followingCount);
+    }
+
+    private User(Parcel in){
+        name= in.readString();
+        uid= in.readLong();
+       screenName= in.readString();
+        profileImageUrl= in.readString();
+        tagline= in.readString();
+        followersCount= in.readInt();
+        followingCount= in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // After implementing the `Parcelable` interface, we need to create the
+    // `Parcelable.Creator<MyParcelable> CREATOR` constant for our class;
+    // Notice how it has our class specified as its type.
+    public static final Parcelable.Creator<User> CREATOR
+            = new Parcelable.Creator<User>() {
+
+        // This simply calls our new constructor (typically private) and
+        // passes along the unmarshalled `Parcel`, and then returns the new object!
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        // We just need to copy this and change the type to match our class.
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    public User(){
+
+    }
 
     //deserialize the user json into a user object
     public static User fromJSON(JSONObject json){

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,9 +13,13 @@ import android.view.MenuItem;
 import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.mysimpletweets.Fragments.HomeTimelineFragment;
 import com.codepath.apps.mysimpletweets.Fragments.MentionsTimelineFragment;
+import com.codepath.apps.mysimpletweets.models.Tweet;
 
 public class TimelineActivity extends AppCompatActivity {
-
+    private final int REQUEST_CODE= 20;
+    SmartFragmentStatePagerAdapter adapterViewPager;
+   // TweetsPagerAdapter adapterViewPager;
+    //ArrayList<Tweet> mtweets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,16 +27,29 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(" ");
+        // Display icon in the toolbar
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.ic_actionbar_tweet_icon);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        //mtweets= new ArrayList<>();
         //Get ViewPager
         ViewPager vpPager= (ViewPager)findViewById(R.id.viewpager);
         //Set ViewPager adapter for the pager
-        vpPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
+        adapterViewPager= new TweetsPagerAdapter(getSupportFragmentManager());
+        vpPager.setAdapter(adapterViewPager);
         //Find the pager sliding tabs
         PagerSlidingTabStrip tabStrip= (PagerSlidingTabStrip)findViewById(R.id.tabs);
         //Attach the tab strip to the viewpager
         tabStrip.setViewPager(vpPager);
+
     }
 
+
+    /*void onGetTweetData(ArrayList<Tweet> tweets){
+        mtweets= tweets;
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,16 +66,36 @@ public class TimelineActivity extends AppCompatActivity {
     public void onProfileView(MenuItem mi) {
             //Launch the profile view
             // Toast.makeText(this, "Invisible", Toast.LENGTH_SHORT).show();
-        Intent i= new Intent(TimelineActivity.this, ProfileActivity.class);
+        Intent i = new Intent(TimelineActivity.this, ProfileActivity.class);
+        //i.putExtra("screenName", mtweets.get().getUser().getScreenName());
         startActivity(i);
+    }
+
+    public void onComposeTweet(MenuItem item) {
+        //launch Compose Tweet view
+        //Toast.makeText(this, "Composed", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
+        //i.putExtra("profile", mtweets.get().getUser().getProfileImageUrl());
+       startActivityForResult(i, REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // REQUEST_CODE is defined above
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            Tweet tweet = (Tweet) data.getExtras().getParcelable("tweet");
+            HomeTimelineFragment fragmentHomeTweets =
+                    (HomeTimelineFragment) adapterViewPager.getRegisteredFragment(0);
+            fragmentHomeTweets.appendTweet(tweet);
+        }
     }
 
 
     //Return the order of the fragments in the view pager
-    public class TweetsPagerAdapter extends FragmentPagerAdapter{
+    public class TweetsPagerAdapter extends SmartFragmentStatePagerAdapter{
         private String tabTitles[]= {"Home", "Mentions"};
 
-        //Adapoter gets manager which it uses to iinseert or remove fragments from the activity
+        //Adapter gets manager which it uses to insert or remove fragments from the activity
         public TweetsPagerAdapter(FragmentManager fm){
             super(fm);
         }
@@ -90,4 +126,6 @@ public class TimelineActivity extends AppCompatActivity {
             return tabTitles.length;
         }
     }
+
+
 }

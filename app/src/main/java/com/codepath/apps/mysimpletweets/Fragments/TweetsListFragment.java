@@ -35,6 +35,18 @@ public class TweetsListFragment extends Fragment {
         return view;
     }
 
+   /* public interface TweetListListener {
+        void onGetTweetData(ArrayList<Tweet> tweets);
+    }*/
+
+    /*public static TweetsListFragment newInstance(Tweet tweet) {
+        TweetsListFragment frag = new TweetsListFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("tweet", tweet);
+        frag.setArguments(args);
+        return frag;
+    }*/
+
     //creation lifecycle event
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,9 +57,20 @@ public class TweetsListFragment extends Fragment {
         tweets= new ArrayList<>();
         //construct the adapter
         aTweets= new TweetArrayAdapter(getActivity(), tweets);
+
+        /*// Return tweets back to activity through the implemented listener
+        TweetListListener listener = (TweetListListener) getActivity();
+        listener.onGetTweetData(tweets);*/
     }
 
     public void addAll(List<Tweet> tweets){
         aTweets.addAll(tweets);
     }
+
+    public void add(int position, Tweet tweet){
+        tweets.add(position, tweet);
+        aTweets.notifyDataSetChanged();
+        lvTweets.setSelection(0);
+    }
+
 }
