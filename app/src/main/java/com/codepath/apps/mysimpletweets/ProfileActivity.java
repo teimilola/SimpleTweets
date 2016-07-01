@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,20 +26,11 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         final Toolbar toolbar= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        client= TwitterApplication.getRestClient();
-        //Get Account Info
-        client.getUserInfo(new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                user= User.fromJSON(response);
-                //My current user accounts information
-                toolbar.setTitle("@" + user.getScreenName());
-                populateProfileHeader(user);
-            }
-        });
         //Get screenName
         String screenName = getIntent().getStringExtra("screen_name");
+        int code= getIntent().getIntExtra("code", 400);
+        client= TwitterApplication.getRestClient();
+
         if (savedInstanceState == null) {
             //Create the user timeline fragment
             UserTimelineFragment fragmentUserTimeline = UserTimelineFragment.newInstance(screenName);
@@ -47,6 +39,31 @@ public class ProfileActivity extends AppCompatActivity {
             ft.replace(R.id.flContainer, fragmentUserTimeline);
             ft.commit();
 
+        }
+
+        //Get Account Info
+        if(code== 35){
+                client.showUser(screenName, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        user= User.fromJSON(response);
+                        Log.d("USER",response.toString());
+                        //My current user accounts information
+                        toolbar.setTitle("@" + user.getScreenName());
+                        populateProfileHeader(user);
+                    }
+                });
+        }
+        else if(code== 10) {
+            client.getUserInfo(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    user = User.fromJSON(response);
+                    //My current user accounts information
+                    toolbar.setTitle("@" + user.getScreenName());
+                    populateProfileHeader(user);
+                }
+            });
         }
     }
 

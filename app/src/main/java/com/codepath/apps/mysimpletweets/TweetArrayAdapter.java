@@ -1,6 +1,7 @@
 package com.codepath.apps.mysimpletweets;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,13 +37,24 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
         }
         //find subviews
-        ImageView ivProfileImage= (ImageView)convertView.findViewById(R.id.ivProfileImage);
+        final ImageView ivProfileImage= (ImageView)convertView.findViewById(R.id.ivProfileImage);
         TextView tvUsername= (TextView)convertView.findViewById(R.id.tvUserName);
         TextView tvTweet= (TextView)convertView.findViewById(R.id.tvTweet);
         tvUsername.setText(tweet.getUser().getScreenName());
         tvTweet.setText(tweet.getBody());
         ivProfileImage.setImageResource(android.R.color.transparent); //clear out the old image for a recycled view
         Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImage);
+        ivProfileImage.setTag(tweet.getUser().getScreenName());
+        ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i= new Intent(getContext(), ProfileActivity.class);
+                i.putExtra("screen_name", ivProfileImage.getTag().toString());
+                i.putExtra("code", 35);
+                getContext().startActivity(i);
+            }
+        });
+
         TextView tvDate= (TextView)convertView.findViewById(R.id.tvDate);
         String date= getRelativeTimeAgo(tweet.getCreatedAt());
        if(date.contains("ago")){
@@ -99,4 +111,6 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 
         return relativeDate;
     }
+
+
 }

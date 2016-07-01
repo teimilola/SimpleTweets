@@ -18,8 +18,8 @@ import com.codepath.apps.mysimpletweets.models.Tweet;
 public class TimelineActivity extends AppCompatActivity {
     private final int REQUEST_CODE= 20;
     SmartFragmentStatePagerAdapter adapterViewPager;
-   // TweetsPagerAdapter adapterViewPager;
-    //ArrayList<Tweet> mtweets;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,6 @@ public class TimelineActivity extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.ic_actionbar_tweet_icon);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
-        //mtweets= new ArrayList<>();
         //Get ViewPager
         ViewPager vpPager= (ViewPager)findViewById(R.id.viewpager);
         //Set ViewPager adapter for the pager
@@ -46,10 +45,6 @@ public class TimelineActivity extends AppCompatActivity {
 
     }
 
-
-    /*void onGetTweetData(ArrayList<Tweet> tweets){
-        mtweets= tweets;
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,6 +62,7 @@ public class TimelineActivity extends AppCompatActivity {
             //Launch the profile view
             // Toast.makeText(this, "Invisible", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(TimelineActivity.this, ProfileActivity.class);
+        i.putExtra("code", 10);
         //i.putExtra("screenName", mtweets.get().getUser().getScreenName());
         startActivity(i);
     }
@@ -126,6 +122,8 @@ public class TimelineActivity extends AppCompatActivity {
             return tabTitles.length;
         }
     }
+
+
 
 
 }

@@ -76,4 +76,32 @@ public class UserTimelineFragment extends TweetsListFragment{
         });
 
     }
+
+    @Override
+    protected void fetchTimelineAsync() {
+        // `client` here is an instance of Android Async HTTP
+        String screenName= getArguments().getString("screen_name");
+        client.getUserTimeline(screenName, new JsonHttpResponseHandler() {
+            //SUCCESS
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                Log.d("DEBUG", json.toString());
+                //Deserialize JSON
+                //Create Models and add to adapter
+                //Load the model data into listview
+                clear();
+                addAll(Tweet.fromJSONArray(json));
+                //  Log.d("DEBUG", aTweets.toString());
+                // Now we call setRefreshing(false) to signal refresh has finished
+                swipeContainer.setRefreshing(false);
+
+            }
+
+            //FAILURE
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DEBUG", errorResponse.toString());
+            }
+        });
+    }
 }

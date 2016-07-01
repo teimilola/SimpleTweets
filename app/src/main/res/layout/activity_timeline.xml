@@ -12,17 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/toolbar_name"
-        app:titleTextColor="@android:color/white"
-        android:background="#1e1b1b">
+        android:background="#55acee">
     </android.support.v7.widget.Toolbar>
 
     <com.astuetz.PagerSlidingTabStrip
         android:id="@+id/tabs"
         app:pstsShouldExpand="true"
         app:pstsTextAllCaps="true"
+        app:pstsIndicatorColor="#55acee"
+        app:pstsIndicatorHeight="5dp"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_below="@+id/toolbar"/>
+        android:layout_below="@+id/toolbar"
+       />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
