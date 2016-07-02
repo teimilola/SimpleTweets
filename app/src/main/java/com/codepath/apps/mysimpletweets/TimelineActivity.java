@@ -71,6 +71,7 @@ public class TimelineActivity extends AppCompatActivity {
         //launch Compose Tweet view
         //Toast.makeText(this, "Composed", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
+        i.putExtra("code", 30);
         //i.putExtra("profile", mtweets.get().getUser().getProfileImageUrl());
        startActivityForResult(i, REQUEST_CODE);
     }

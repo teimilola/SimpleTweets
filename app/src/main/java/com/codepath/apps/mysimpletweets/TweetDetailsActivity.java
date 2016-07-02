@@ -1,13 +1,11 @@
 package com.codepath.apps.mysimpletweets;
 
-import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,88 +19,85 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
-/**
- * Created by temilola on 6/27/16.
- */
-public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
+public class TweetDetailsActivity extends AppCompatActivity {
 
     private TwitterClient client;
+    Tweet tweet;
     Tweet retweet;
     Tweet fav;
     private boolean isFavorited;
     private boolean isRetweeted;
 
-    public TweetArrayAdapter(Context context, List<Tweet> tweets){
-        super(context, android.R.layout.simple_list_item_1, tweets);
-    }
-
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        //get tweet
-        final Tweet tweet= getItem(position);
-        client = TwitterApplication.getRestClient();
-        //Find or inflate the view
-        if(convertView == null){
-            convertView= LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
-        }
-        //find subviews
-        final ImageView ivProfileImage= (ImageView)convertView.findViewById(R.id.ivProfileImage);
-        TextView tvUsername= (TextView)convertView.findViewById(R.id.tvUserName);
-        TextView tvTweet= (TextView)convertView.findViewById(R.id.tvTweet);
-        TextView tvRTCount= (TextView)convertView.findViewById(R.id.tvRTCount);
-        TextView tvLikeCount= (TextView)convertView.findViewById(R.id.tvFavCount);
-        ImageView ivReply= (ImageView)convertView.findViewById(R.id.ivReply);
-        final ImageView ivRetweet= (ImageView)convertView.findViewById(R.id.ivRetweet);
-        final ImageView ivFavorite= (ImageView)convertView.findViewById(R.id.ivFavorite);
-        ImageView ivEmbedded= (ImageView)convertView.findViewById(R.id.ivEmbedded);
-        tvUsername.setText(tweet.getUser().getScreenName());
-        tvTweet.setText(tweet.getBody());
-        tvRTCount.setText(String.valueOf(tweet.getRtCount()));
-        tvLikeCount.setText(String.valueOf(tweet.getFavCount()));
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tweet_details);
 
+        tweet= getIntent().getParcelableExtra("tweet");
+
+        client = TwitterApplication.getRestClient();
+
+        final int favCount;
+        final int rtCount;
+
+        final ImageView ivProfileImage= (ImageView)findViewById(R.id.ivProfileImage);
+        TextView tvUsername= (TextView)findViewById(R.id.tvUserName);
+        TextView tvTweet= (TextView)findViewById(R.id.tvTweet);
+        final TextView tvRTCount= (TextView)findViewById(R.id.tvRTCount);
+        final TextView tvFavCount= (TextView)findViewById(R.id.tvLikeCount);
+        ImageView ivReply= (ImageView)findViewById(R.id.ivReply);
+        final ImageView ivFavorite= (ImageView)findViewById(R.id.ivFavorite);
+        final ImageView ivRetweet= (ImageView)findViewById(R.id.ivRetweet);
+        ImageView ivEmbedded= (ImageView)findViewById(R.id.ivEmbedded);
+
+        favCount= tweet.getFavCount();
+        rtCount= tweet.getRtCount();
         isFavorited= tweet.isFavorited();
         isRetweeted= tweet.isRetweeted();
 
-        ivProfileImage.setImageResource(android.R.color.transparent); //clear out the old image for a recycled view
-        Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).transform(new RoundedTransformation(10, 10)).fit().centerCrop().into(ivProfileImage);
-        Picasso.with(getContext()).load(tweet.getMediaUrl()).resize(parent.getMeasuredWidth(), 0).into(ivEmbedded);
+        tvUsername.setText(tweet.getUser().getScreenName());
+        tvTweet.setText(tweet.getBody());
+        tvFavCount.setText(String.valueOf(tweet.getFavCount()));
 
-        if(isFavorited){
-            ivFavorite.setImageResource(R.drawable.ic_favorited);
+        if(tweet.getRtCount()==1){
+            tvRTCount.setText(String.valueOf(rtCount) + " RETWEET");
+        }
+        else {
+            tvRTCount.setText(String.valueOf(rtCount) + " RETWEETS");
+        }
+
+        if(tweet.getFavCount()==1){
+            tvFavCount.setText(String.valueOf(favCount) + " LIKE");
         }
         else{
-            ivFavorite.setImageResource(R.drawable.ic_favorite_icon);
+            tvFavCount.setText(String.valueOf(favCount) + " LIKES");
         }
 
-        if(isRetweeted){
-            ivRetweet.setImageResource(R.drawable.ic_retweet_clicked);
-        }else{
-            ivRetweet.setImageResource(R.drawable.ic_retweet_icon);
-        }
-
+        ivProfileImage.setImageResource(android.R.color.transparent); //clear out the old image for a recycled view
+        Picasso.with(this).load(tweet.getUser().getProfileImageUrl()).transform(new RoundedTransformation(10, 10)).fit().centerCrop().into(ivProfileImage);
+        Picasso.with(this).load(tweet.getMediaUrl()).into(ivEmbedded);
         ivProfileImage.setTag(tweet.getUser().getScreenName());
         ivProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i= new Intent(getContext(), ProfileActivity.class);
+                Intent i= new Intent(TweetDetailsActivity.this, ProfileActivity.class);
                 i.putExtra("screen_name", ivProfileImage.getTag().toString());
                 i.putExtra("code", 35);
-                getContext().startActivity(i);
+                startActivity(i);
             }
         });
 
         ivReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i= new Intent(getContext(), ComposeActivity.class);
+                Intent i= new Intent(TweetDetailsActivity.this, ComposeActivity.class);
                 i.putExtra("screen_name", ivProfileImage.getTag().toString());
                 i.putExtra("code", 40);
-                getContext().startActivity(i);
+                startActivity(i);
             }
         });
 
@@ -136,20 +131,25 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
             }
         });
 
-        //Setup on Item Click Listener
-       tvTweet.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               Intent i= new Intent(getContext(), TweetDetailsActivity.class);
-               i.putExtra("tweet", tweet);
-               getContext().startActivity(i);
-           }
-       });
+        if(isFavorited){
+            ivFavorite.setImageResource(R.drawable.ic_favorited);
+        }
+        else{
+            ivFavorite.setImageResource(R.drawable.ic_favorite_icon);
+        }
 
-        TextView tvDate= (TextView)convertView.findViewById(R.id.tvDate);
+        if(isRetweeted){
+            ivRetweet.setImageResource(R.drawable.ic_retweet_clicked);
+        }else{
+            ivRetweet.setImageResource(R.drawable.ic_retweet_icon);
+        }
+
+        TextView tvDate= (TextView)findViewById(R.id.tvDate);
+
         String date= getRelativeTimeAgo(tweet.getCreatedAt());
-       if(date.contains("ago")){
-           date=  date.substring(0, date.length()-4);
+
+        if(date.contains("ago")){
+            date=  date.substring(0, date.length()-4);
         }
         if(date.contains("hours")){
             date= date.substring(0,(date.length()-6));
@@ -181,8 +181,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
             date=date.substring(0,(date.length()-6));
         }
         tvDate.setText(date);
-        //return view
-        return convertView;
+
     }
 
     // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
@@ -316,6 +315,5 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
             }
         });
     }
-
 
 }

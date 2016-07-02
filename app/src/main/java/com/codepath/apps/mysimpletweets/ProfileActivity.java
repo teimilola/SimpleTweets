@@ -77,7 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvTagLine.setText(user.getTagline());
         tvFollowers.setText(user.getFollowersCount() + " Followers");
         tvFollowing.setText(user.getFollowingCount() + " Following");
-        Picasso.with(this).load(user.getProfileImageUrl()).into(ivProfileImage);
+        Picasso.with(this).load(user.getProfileImageUrl()).transform(new RoundedTransformation(10, 10)).fit().centerCrop().into(ivProfileImage);
 
     }
 }

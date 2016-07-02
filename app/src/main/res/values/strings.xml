@@ -11,4 +11,5 @@
     <string name="tweet_btn">Tweet</string>
     <string name="tweet_count">140</string>
     <string name="compose_hint">What\'s happening?</string>
+    <string name="dms">Direct Messages</string>
 </resources>

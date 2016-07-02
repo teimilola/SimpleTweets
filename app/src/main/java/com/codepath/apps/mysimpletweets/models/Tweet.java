@@ -48,7 +48,33 @@ public class Tweet implements Parcelable{
     public User getUser() {
         return user;
     }
+
+    public int getFavCount() {
+        return favCount;
+    }
+
+    public int getRtCount() {
+        return rtCount;
+    }
+
+    public boolean isFavorited() {
+        return favorited;
+    }
+
+    public boolean isRetweeted() {
+        return retweeted;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
     //list out the attributes
+    private String mediaUrl;
+    private int rtCount;
+    private int favCount;
+    private boolean favorited;
+    private boolean retweeted;
     private String body;
     private long uid;
     private User user; //store embedded user object
@@ -56,6 +82,11 @@ public class Tweet implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        out.writeString(mediaUrl);
+        out.writeInt(rtCount);
+        out.writeInt(favCount);
+        out.writeInt(favorited ? 1 : 0);
+        out.writeInt(retweeted ? 1 : 0);
         out.writeLong(uid);
         out.writeString(body);
         out.writeString(createdAt);
@@ -63,6 +94,11 @@ public class Tweet implements Parcelable{
     }
 
     private Tweet(Parcel in){
+        mediaUrl=in.readString();
+        rtCount= in.readInt();
+        favCount= in.readInt();
+        favorited  = (in.readInt() == 0) ? false : true;
+       retweeted = (in.readInt() == 0) ? false : true;
         uid= in.readLong();
         body= in.readString();
         createdAt= in.readString();
@@ -104,10 +140,22 @@ public class Tweet implements Parcelable{
         Tweet tweet = new Tweet();
         //extract values form the JSON, store here
         try {
+            JSONArray media = jsonObject.getJSONObject("entities").optJSONArray("media");
+            if(media != null && media.length() > 0) {
+                tweet.mediaUrl =media.getJSONObject(0).getString("media_url");
+            }
             tweet.body= jsonObject.getString("text");
             tweet.uid= jsonObject.getLong("id");
             tweet.createdAt= jsonObject.getString("created_at");
             tweet.user= User.fromJSON(jsonObject.getJSONObject("user"));
+            tweet.rtCount= jsonObject.getInt("retweet_count");
+            tweet.favCount= jsonObject.getInt("favorite_count");
+            tweet.favorited= jsonObject.getBoolean("favorited");
+            tweet.retweeted= jsonObject.getBoolean("retweeted");
+            if(!jsonObject.isNull("retweeted_status")){
+                JSONObject retweetedJson= jsonObject.getJSONObject("retweeted_status");
+                tweet.favCount= retweetedJson.getInt("favorite_count");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
