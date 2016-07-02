@@ -56,7 +56,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
--I had some challenges formatting the relative time to twitter format. But I eventually adopted a working solution.
+- I had some challenges formatting the relative time to twitter format. But I eventually adopted a working solution.
 
 ## Open-source libraries used
 
